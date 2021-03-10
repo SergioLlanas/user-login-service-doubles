@@ -8,6 +8,6 @@ class AppRunner
 {
     public function run(){
         $userLoginService = new UserLoginService(new FacebookSessionManager());
-        $userLoginService->countExtrenalSessions()
+        $userLoginService->countExtrenalSessions();
     }
 }
