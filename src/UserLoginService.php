@@ -36,7 +36,28 @@ class UserLoginService
 
     public function countExtrenalSessions(): int
     {
-        return $this->sessionManager->getSessions();
+        return $this->sessionManager->getSessions() + count($this->getLoggedUsers());
+    }
+
+    public function login(User $user, String $password): String
+    {
+        if($this->sessionManager->login($user->getName(),$password)){
+            $this->addUserToSessionManually($user);
+            return "ok";
+        }
+        if(!$this->sessionManager->login($user->getName(),$password)){
+            return "No se ha podido loggear";
+        }
+
+    }
+
+    public function logout(User $user)
+    {
+        if(in_array($user,$this->getLoggedUsers())){
+            $this->loggedUsers = [];
+            return "esta logeado";
+        }
+        return "no esta logeado";
     }
 
 }
