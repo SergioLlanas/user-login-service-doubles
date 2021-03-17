@@ -113,4 +113,57 @@ final class UserLoginServiceTest extends TestCase
         $this->assertCount(0,$userLoginService->getLoggedUsers());
     }
 
+    /**
+     * @test
+     */
+    public function logoutNotCalled()
+    {
+        $spy = new SpySessionManager();
+        $userLoginService = new UserLoginService($spy);
+        $user1 = new User("Juan");
+        $user2 = new User("Pepe");
+        $userLoginService->logout($user1);
+        $userLoginService->logout($user2);
+        $this->assertEquals(false,$spy->verifyLogoutCalled(1));
+    }
+
+    /**
+     * @test
+     */
+    public function logoutCalled()
+    {
+        $spy = new SpySessionManager();
+        $userLoginService = new UserLoginService($spy);
+        $user1 = new User("Juan");
+        $user2 = new User("Pepe");
+        $userLoginService->logout($user1);
+        $userLoginService->logout($user2);
+        $this->assertEquals(true,$spy->verifyLogoutCalled(2));
+    }
+
+    /**
+     * @test
+     */
+    public function usuerNotExists(){
+        $userloginService = new UserLoginService(new MockSessionManager());
+        $user = new User("paco");
+        $password = "1234";
+        $userloginService->login($user,$password);
+    }
+    /**
+     * @test
+     */
+    public function usuerIsNotLoggedWhenServiceIsDown(){
+        $mock = new MockSessionManager();
+        $userloginService = new UserLoginService($mock);
+        $user = new User("paco");
+        $password = "1234";
+
+        $mock->callLogin($user->getName(), $password,);
+        $mock->loginWillReturn("Service is down");
+        $loginStatus = $userloginService->login($user,$password);
+        $mock->times(1);
+
+        $this->assertEquals("Service is down", $loginStatus);
+    }
 }
